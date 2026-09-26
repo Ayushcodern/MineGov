@@ -6,7 +6,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Google Gemini](https://img.shields.io/badge/Gemini_AI-3.5_Flash_Vision-8E75C2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![DGMS Compliant](https://img.shields.io/badge/DGMS-CMR_2017_Compliant-FF6B6B?style=for-the-badge)](https://dgms.gov.in/)
-[![Download APK](https://img.shields.io/badge/Download-MineGov.apk_v1.0.0-22c55e?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Ayushcodern/MIneGov/releases/latest)
+[![Download APK](https://img.shields.io/badge/Download-MineGov.apk_v1.0.0-22c55e?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Ayushcodern/MIneGov/raw/main/releases/MineGov.apk)
 
 > **Next-Generation Governance, Real-Time Compliance Audit, AI Hazard Forecasting & Offline-First Field Safety System for the Indian Coal Mining Sector.**
 

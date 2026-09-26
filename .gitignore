@@ -2,9 +2,9 @@ cm-gip-mobile/jdk17-adoptium.zip
 cm-gip-mobile/jdk17.zip
 cm-gip-mobile/jdk17/
 *.zip
-*.apk
 *.aab
 .env
 cm-gip-mobile/.env
 !*.env.example
+
 
