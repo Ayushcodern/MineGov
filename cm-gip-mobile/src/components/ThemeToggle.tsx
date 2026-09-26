@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Switch, StyleSheet } from 'react-native';
+import { View, Switch, StyleSheet } from 'react-native';
 import { useAppTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -8,17 +8,15 @@ export default function ThemeToggle() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.iconContainer, { backgroundColor: theme.colors.accent }]}>
-        <Ionicons 
-          name={isDarkMode ? "moon" : "sunny"} 
-          size={20} 
-          color={theme.colors.secondary} 
-        />
-      </View>
-      <Text style={[styles.label, { color: theme.colors.text }]}>Dark Mode</Text>
+      <Ionicons 
+        name={isDarkMode ? "moon" : "sunny"} 
+        size={20} 
+        color={isDarkMode ? theme.colors.warning : theme.colors.primary} 
+        style={{ marginRight: 8 }}
+      />
       <Switch
         trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
-        thumbColor={theme.colors.card}
+        thumbColor={isDarkMode ? theme.colors.warning : theme.colors.card}
         ios_backgroundColor={theme.colors.border}
         onValueChange={toggleTheme}
         value={isDarkMode}
@@ -31,19 +29,5 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 8,
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  label: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '500',
   },
 });

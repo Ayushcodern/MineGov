@@ -3,25 +3,33 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../context/ThemeContext';
-import { logoutUser } from '../services/authService';
+import { logoutUser, getCurrentOfficer, OfficerProfile } from '../services/authService';
 import ThemeToggle from '../components/ThemeToggle';
 import NetInfo from '@react-native-community/netinfo';
 import { getQueue, processQueue } from '../services/syncService';
+import { useTranslation } from 'react-i18next';
+import { useAppLanguage } from '../context/LanguageContext';
 
-export default function ProfileScreen({ navigation }) {
-  const { theme } = useAppTheme();
-  const [profile, setProfile] = useState(null);
+export default function ProfileScreen({ navigation }: any) {
+  const { theme } = useAppTheme() as any;
+  const { t } = useTranslation();
+  const { currentLanguage, setLanguage } = useAppLanguage();
+  const [profile, setProfile] = useState<OfficerProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
   const [queueCount, setQueueCount] = useState(0);
   const [isSyncing, setIsSyncing] = useState(false);
 
+  const toggleLanguage = () => {
+    const nextLang = currentLanguage === 'hi' ? 'en' : 'hi';
+    setLanguage(nextLang);
+  };
+
   useEffect(() => {
-    // Network listener
     const unsubscribe = NetInfo.addEventListener(state => {
-      setIsOnline(state.isConnected);
+      setIsOnline(Boolean(state.isConnected));
       if (state.isConnected && queueCount > 0) {
-        handleSync(); // Auto-sync when network returns
+        handleSync();
       }
     });
 
@@ -30,13 +38,8 @@ export default function ProfileScreen({ navigation }) {
         const queue = await getQueue();
         setQueueCount(queue.length);
         
-        // Dummy user load
-        setProfile({
-          name: 'Officer Smith',
-          role: 'Senior Inspector',
-          mineSite: 'Dhanbad Colliery, Block B',
-          stats: { inspections: 142, compliance: '94%' }
-        });
+        const officer = await getCurrentOfficer();
+        setProfile(officer);
       } catch (error) {
         console.error(error);
       } finally {
@@ -46,7 +49,6 @@ export default function ProfileScreen({ navigation }) {
     
     loadData();
     
-    // Polling queue count every 5 seconds just to keep UI updated
     const interval = setInterval(async () => {
       const q = await getQueue();
       setQueueCount(q.length);
@@ -92,7 +94,7 @@ export default function ProfileScreen({ navigation }) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>My Profile</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>{t('profile')}</Text>
       </View>
 
       {isLoading || !profile ? (
@@ -100,67 +102,71 @@ export default function ProfileScreen({ navigation }) {
       ) : (
         <ScrollView contentContainerStyle={styles.content}>
           <View style={[styles.profileCard, { backgroundColor: theme.colors.card, shadowColor: theme.colors.border }]}>
-            <View style={styles.avatarContainer}>
-              <Ionicons name="person" size={40} color="#FFFFFF" />
+            <View style={[styles.avatar, { backgroundColor: theme.colors.primary + '20' }]}>
+              <Ionicons name="person" size={48} color={theme.colors.primary} />
             </View>
-            <Text style={[styles.name, { color: theme.colors.text }]}>{profile.name}</Text>
-            <Text style={[styles.role, { color: theme.colors.primary }]}>{profile.role}</Text>
-            
-            <View style={styles.statsRow}>
-              <View style={styles.statBox}>
-                <Text style={[styles.statValue, { color: theme.colors.text }]}>{profile.stats?.inspections || 0}</Text>
-                <Text style={[styles.statLabel, { color: theme.colors.textLight }]}>Inspections</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
-              <View style={styles.statBox}>
-                <Text style={[styles.statValue, { color: theme.colors.text }]}>{profile.stats?.compliance || '0%'}</Text>
-                <Text style={[styles.statLabel, { color: theme.colors.textLight }]}>Compliance</Text>
-              </View>
+            <Text style={[styles.profileName, { color: theme.colors.text }]}>{profile.name}</Text>
+            <View style={[styles.roleTag, { backgroundColor: theme.colors.primary }]}>
+              <Text style={styles.roleTagText}>{profile.role.toUpperCase()}</Text>
             </View>
+            <Text style={[styles.officerId, { color: theme.colors.textLight }]}>ID: {profile.officer_id} • {profile.email}</Text>
           </View>
 
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Preferences</Text>
-          <View style={[styles.menuGroup, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
-            
-            <ThemeToggle />
-            
-            <View style={[styles.menuDivider, { backgroundColor: theme.colors.border }]} />
-            
-            <View style={styles.menuItem}>
-              <View style={[styles.menuIconContainer, { backgroundColor: isOnline ? 'rgba(72, 187, 120, 0.1)' : 'rgba(245, 101, 101, 0.1)' }]}>
-                <Ionicons name={isOnline ? "wifi" : "cloud-offline"} size={20} color={isOnline ? theme.colors.success : theme.colors.danger} />
+          {/* Sync & Offline Status */}
+          <View style={[styles.sectionCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+            <View style={styles.cardHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name={isOnline ? "sync-circle" : "cloud-offline"} size={22} color={isOnline ? theme.colors.primary : theme.colors.warning} style={{ marginRight: 8 }} />
+                <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                  {currentLanguage === 'hi' ? 'कार्य सिंक करें (Sync Task)' : 'Sync Task'}
+                </Text>
               </View>
-              <Text style={[styles.menuText, { color: theme.colors.text }]}>Network Status</Text>
-              <Text style={{color: isOnline ? theme.colors.success : theme.colors.danger, fontWeight: 'bold'}}>{isOnline ? 'Online' : 'Offline'}</Text>
+              <Text style={[styles.queueCount, { color: theme.colors.textLight }]}>Queue: {queueCount}</Text>
             </View>
 
-            <View style={[styles.menuDivider, { backgroundColor: theme.colors.border }]} />
-
-            <TouchableOpacity style={styles.menuItem} onPress={handleSync} disabled={isSyncing}>
-              <View style={[styles.menuIconContainer, { backgroundColor: 'rgba(66, 153, 225, 0.1)' }]}>
-                {isSyncing ? (
-                  <ActivityIndicator size="small" color={theme.colors.primary} />
-                ) : (
-                  <Ionicons name="sync" size={20} color={theme.colors.primary} />
-                )}
-              </View>
-              <Text style={[styles.menuText, { color: theme.colors.text }]}>Sync Now</Text>
-              {queueCount > 0 ? (
-                <View style={{backgroundColor: theme.colors.warning, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2}}>
-                  <Text style={{color: '#FFF', fontSize: 12, fontWeight: 'bold'}}>{queueCount} Pending</Text>
-                </View>
+            <TouchableOpacity 
+              style={[styles.syncBtn, { backgroundColor: theme.colors.primary }]}
+              onPress={handleSync}
+              disabled={isSyncing}
+            >
+              {isSyncing ? (
+                <ActivityIndicator color="#FFF" />
               ) : (
-                <Text style={{color: theme.colors.textLight}}>Up to date</Text>
+                <Text style={styles.syncBtnText}>
+                  {currentLanguage === 'hi' ? `कार्य सिंक करें (${queueCount} लंबित)` : `Sync Task Queue (${queueCount} Items)`}
+                </Text>
               )}
             </TouchableOpacity>
-
           </View>
 
-          <TouchableOpacity style={[styles.logoutButton, { backgroundColor: theme.colors.danger }]} onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={20} color="#FFF" style={styles.logoutIcon} />
-            <Text style={styles.logoutText}>Log Out</Text>
-          </TouchableOpacity>
+          {/* Preferences & Settings */}
+          <View style={[styles.sectionCard, { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text, marginBottom: 12 }]}>App Settings & Preferences</Text>
+            
+            <View style={styles.settingRow}>
+              <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Interface Theme</Text>
+              <ThemeToggle />
+            </View>
 
+            <View style={[styles.settingRow, { marginTop: 12, borderTopWidth: 1, borderTopColor: theme.colors.border, paddingTop: 12 }]}>
+              <Text style={[styles.settingLabel, { color: theme.colors.text }]}>Language / भाषा</Text>
+              <TouchableOpacity onPress={toggleLanguage} style={styles.langPill}>
+                <Ionicons name="language" size={16} color={theme.colors.primary} style={{ marginRight: 6 }} />
+                <Text style={{ color: theme.colors.primary, fontWeight: '700' }}>
+                  {currentLanguage === 'hi' ? 'हिंदी (Hindi)' : 'English'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Logout Button */}
+          <TouchableOpacity 
+            style={[styles.logoutBtn, { borderColor: theme.colors.danger }]}
+            onPress={handleLogout}
+          >
+            <Ionicons name="log-out-outline" size={20} color={theme.colors.danger} style={{ marginRight: 8 }} />
+            <Text style={[styles.logoutText, { color: theme.colors.danger }]}>Sign Out</Text>
+          </TouchableOpacity>
         </ScrollView>
       )}
     </SafeAreaView>
@@ -169,31 +175,33 @@ export default function ProfileScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { padding: 20, borderBottomWidth: 1, alignItems: 'center' },
+  header: { padding: 18, borderBottomWidth: 1, alignItems: 'center' },
   headerTitle: { fontSize: 18, fontWeight: 'bold' },
-  content: { padding: 20 },
+  content: { padding: 18, paddingBottom: 40 },
   profileCard: {
-    borderRadius: 16, padding: 24, alignItems: 'center', marginBottom: 24,
-    shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10, elevation: 4,
+    borderRadius: 14,
+    padding: 22,
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3
   },
-  avatarContainer: {
-    width: 80, height: 80, borderRadius: 40, backgroundColor: '#4A5568',
-    justifyContent: 'center', alignItems: 'center', marginBottom: 16,
-  },
-  name: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
-  role: { fontSize: 16, fontWeight: '600', marginBottom: 24 },
-  statsRow: { flexDirection: 'row', width: '100%', borderTopWidth: 1, borderTopColor: 'transparent', paddingTop: 16 },
-  statBox: { flex: 1, alignItems: 'center' },
-  statDivider: { width: 1 },
-  statValue: { fontSize: 20, fontWeight: 'bold' },
-  statLabel: { fontSize: 12, marginTop: 4 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12, marginLeft: 4 },
-  menuGroup: { borderRadius: 12, borderWidth: 1, overflow: 'hidden', marginBottom: 32, paddingHorizontal: 16 },
-  menuItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 16 },
-  menuIconContainer: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', marginRight: 16 },
-  menuText: { flex: 1, fontSize: 15, fontWeight: '500' },
-  menuDivider: { height: 1, width: '100%' },
-  logoutButton: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 16, borderRadius: 12 },
-  logoutIcon: { marginRight: 8 },
-  logoutText: { color: '#FFF', fontSize: 16, fontWeight: 'bold' }
+  avatar: { width: 80, height: 80, borderRadius: 40, justifyContent: 'center', alignItems: 'center', marginBottom: 12 },
+  profileName: { fontSize: 20, fontWeight: 'bold' },
+  roleTag: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12, marginTop: 6 },
+  roleTagText: { color: '#FFF', fontSize: 11, fontWeight: '800' },
+  officerId: { fontSize: 13, marginTop: 8 },
+  sectionCard: { borderRadius: 12, borderWidth: 1, padding: 16, marginBottom: 16 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  sectionTitle: { fontSize: 15, fontWeight: '700' },
+  queueCount: { fontSize: 12, fontWeight: '600' },
+  syncBtn: { borderRadius: 8, paddingVertical: 12, alignItems: 'center' },
+  syncBtnText: { color: '#FFF', fontSize: 14, fontWeight: '700' },
+  settingRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  settingLabel: { fontSize: 14, fontWeight: '600' },
+  langPill: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: '#CBD5E1' },
+  logoutBtn: { flexDirection: 'row', borderWidth: 1.5, borderRadius: 10, paddingVertical: 14, justifyContent: 'center', alignItems: 'center', marginTop: 10 },
+  logoutText: { fontSize: 15, fontWeight: 'bold' }
 });

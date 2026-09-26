@@ -1,25 +1,48 @@
 {
   "expo": {
     "name": "MineGOV",
-    "slug": "MineGOV",
+    "slug": "minegov",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2B6CB0"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "in.gov.minegov.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "MineGOV requires camera access for geotagged forensic evidence and QR scanning.",
+        "NSLocationWhenInUseUsageDescription": "MineGOV requires location access for GPS geofenced mine safety audits."
+      }
     },
     "android": {
+      "package": "in.gov.minegov.app",
+      "versionCode": 1,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#2B6CB0",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.anonymous.MineGOV"
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "99607a51-5a55-45a1-a596-1638332f0c56"
+      }
     }
   }
 }

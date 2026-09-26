@@ -130,3 +130,143 @@ INSERT INTO public.mines (id, name, state, district, latitude, longitude, status
 ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', 'Gevra OpenCast Mine', 'Chhattisgarh', 'Korba', 22.3384, 82.6053, 'active'),
 ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', 'Singareni Underground Shaft 3', 'Telangana', 'Kothagudem', 17.5524, 80.6225, 'active')
 ON CONFLICT (id) DO NOTHING;
+
+-- ==========================================
+-- PHASE 1: PPT COMPLIANCE RULE ID COLUMN
+-- ==========================================
+ALTER TABLE public.observations ADD COLUMN IF NOT EXISTS rule_id TEXT;
+
+-- ==========================================
+-- PHASE 2: 6 COMPLIANCE & GOVERNANCE ROLES
+-- ==========================================
+ALTER TABLE public.officers DROP CONSTRAINT IF EXISTS officers_role_check;
+ALTER TABLE public.officers ADD CONSTRAINT officers_role_check CHECK (role IN ('field_inspector','mining_official','contractor','compliance_officer','corporate','regulator'));
+
+-- ==========================================
+-- PHASE 3: CONTRACTOR CONTRACTS TABLE
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.contractor_contracts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    contractor_name TEXT NOT NULL,
+    contract_end_date DATE NOT NULL,
+    mine_id UUID REFERENCES public.mines(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- ==========================================
+-- PHASE 4: COAL TRANSPORT & QR CHECKPOINTS
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.consignments (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    consignment_code TEXT UNIQUE NOT NULL,
+    vehicle_no TEXT NOT NULL,
+    coal_type TEXT NOT NULL,
+    quality_grade TEXT NOT NULL,
+    quantity_tonnes NUMERIC(10,2) NOT NULL,
+    source_mine_id UUID REFERENCES public.mines(id) ON DELETE CASCADE,
+    status TEXT CHECK (status IN ('registered', 'in_transit', 'delivered', 'flagged')) DEFAULT 'registered',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.checkpoints (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    consignment_id UUID REFERENCES public.consignments(id) ON DELETE CASCADE,
+    location TEXT NOT NULL,
+    quantity_verified NUMERIC(10,2) NOT NULL,
+    vehicle_status TEXT NOT NULL,
+    scanned_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    scanned_by UUID REFERENCES public.officers(id) ON DELETE SET NULL,
+    mismatch_detected BOOLEAN DEFAULT FALSE,
+    notes TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- ==========================================
+-- PHASE 5: ATTENDANCE & LABOUR TRACKING
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.attendance (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    mine_id UUID REFERENCES public.mines(id) ON DELETE CASCADE,
+    worker_id TEXT NOT NULL,
+    worker_name TEXT NOT NULL,
+    check_in_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
+    check_out_at TIMESTAMP WITH TIME ZONE,
+    shift_hours NUMERIC(4,2),
+    method TEXT CHECK (method IN ('qr', 'manual', 'biometric')) DEFAULT 'qr',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+-- ==========================================
+-- PHASE 6: ROW LEVEL SECURITY (RLS) POLICIES
+-- ==========================================
+-- Enable RLS on all tables and grant access for the mobile client anon key
+
+ALTER TABLE public.mines ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on mines" ON public.mines FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.officers ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on officers" ON public.officers FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.inspections ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on inspections" ON public.inspections FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.inspection_checklist_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on inspection_checklist_items" ON public.inspection_checklist_items FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.observations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on observations" ON public.observations FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.corrective_actions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on corrective_actions" ON public.corrective_actions FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.alerts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on alerts" ON public.alerts FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on audit_log" ON public.audit_log FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.sync_queue ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on sync_queue" ON public.sync_queue FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.contractor_contracts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on contractor_contracts" ON public.contractor_contracts FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.consignments ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on consignments" ON public.consignments FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.checkpoints ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on checkpoints" ON public.checkpoints FOR ALL USING (true) WITH CHECK (true);
+
+ALTER TABLE public.attendance ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow anon all on attendance" ON public.attendance FOR ALL USING (true) WITH CHECK (true);
+
+-- ==========================================
+-- PHASE 7: SCHEMA EXTENSIONS & COMPATIBILITY
+-- ==========================================
+-- Add missing columns to audit_log, inspections, and consignments
+ALTER TABLE public.audit_log ALTER COLUMN entity_id TYPE TEXT USING entity_id::text;
+ALTER TABLE public.audit_log ADD COLUMN IF NOT EXISTS details TEXT;
+
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS findings TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS "aiInsights" TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS ai_insights TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS file_type TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS video_hash TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS "videoHash" TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS geotag TEXT;
+ALTER TABLE public.inspections ADD COLUMN IF NOT EXISTS mine_name TEXT;
+
+ALTER TABLE public.consignments ADD COLUMN IF NOT EXISTS source_mine_name TEXT;
+
+-- Create tasks view for backwards compatibility
+CREATE OR REPLACE VIEW public.tasks AS
+SELECT 
+  id, 
+  title, 
+  description,
+  priority,
+  due_date AS "dueDate", 
+  status, 
+  assigned_to AS "assignedTo",
+  mine_id
+FROM public.corrective_actions;
+

@@ -4,7 +4,12 @@ import PropTypes from 'prop-types';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../context/ThemeContext';
 
-export default function TaskCard({ task, onPress }) {
+interface TaskCardProps {
+  task: any;
+  onPress: (task: any) => void;
+}
+
+export default function TaskCard({ task, onPress }: TaskCardProps) {
   const { theme } = useAppTheme();
   
   const isCompleted = task.status === 'completed';

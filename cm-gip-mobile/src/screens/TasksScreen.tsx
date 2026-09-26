@@ -1,21 +1,24 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl, Alert } from 'react-native';
 import TaskCard from '../components/TaskCard';
 import { useAppTheme } from '../context/ThemeContext';
 import { getUserTasks, markTaskComplete } from '../services/taskService';
+import { getCurrentOfficer, OfficerProfile } from '../services/authService';
 
-export default function TasksScreen({ navigation }) {
-  const { theme } = useAppTheme();
+export default function TasksScreen({ navigation }: any) {
+  const { theme } = useAppTheme() as any;
   const [filter, setFilter] = useState('All');
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [officer, setOfficer] = useState<OfficerProfile | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const loadTasks = async () => {
     try {
-      const userId = 'GUEST_USER';
-      const fetchedTasks = await getUserTasks(userId);
-      setTasks(fetchedTasks);
+      const current = await getCurrentOfficer();
+      setOfficer(current);
+      const fetchedTasks = await getUserTasks(current.id);
+      setTasks(fetchedTasks || []);
     } catch (error) {
       console.error('Failed to load tasks', error);
     }
@@ -37,8 +40,26 @@ export default function TasksScreen({ navigation }) {
     return true;
   });
 
-  const handleTaskPress = (task) => {
-    if (task.status !== 'completed') {
+  const handleTaskPress = async (task: any) => {
+    if (task.status === 'completed') return;
+
+    if (officer?.role === 'contractor') {
+      Alert.alert(
+        'DEMO Corrective Action',
+        `Task: ${task.title}\nDue: ${task.dueDate}\n\nMark this maintenance task as completed?`,
+        [
+          { text: 'Cancel', style: 'cancel' },
+          {
+            text: 'Mark Complete',
+            onPress: async () => {
+              await markTaskComplete(task.id);
+              setTasks(prev => prev.map(t => t.id === task.id ? { ...t, status: 'completed' } : t));
+              Alert.alert('Success', 'Corrective action marked resolved and sent for compliance approval.');
+            }
+          }
+        ]
+      );
+    } else {
       navigation.navigate('InspectionFlow');
     }
   };
@@ -46,7 +67,7 @@ export default function TasksScreen({ navigation }) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={[styles.header, { backgroundColor: theme.colors.card, borderBottomColor: theme.colors.border }]}>
-        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>My Tasks</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>Corrective Action Tasks</Text>
       </View>
 
       <View style={styles.filterContainer}>
@@ -85,10 +106,10 @@ export default function TasksScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { padding: 20, borderBottomWidth: 1, alignItems: 'center' },
+  header: { padding: 18, borderBottomWidth: 1, alignItems: 'center' },
   headerTitle: { fontSize: 18, fontWeight: 'bold' },
-  filterContainer: { flexDirection: 'row', padding: 16, justifyContent: 'space-between' },
+  filterContainer: { flexDirection: 'row', padding: 14, justifyContent: 'space-between' },
   filterTab: { flex: 1, paddingVertical: 8, alignItems: 'center', borderRadius: 20, marginHorizontal: 4, borderWidth: 1, borderColor: 'transparent' },
-  filterText: { fontSize: 14, fontWeight: '600' },
+  filterText: { fontSize: 13, fontWeight: '600' },
   listContainer: { padding: 16 }
 });

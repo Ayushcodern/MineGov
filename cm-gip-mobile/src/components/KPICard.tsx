@@ -3,7 +3,14 @@ import { View, Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { useAppTheme } from '../context/ThemeContext';
 
-export default function KPICard({ value, label, trend, colorType }) {
+interface KPICardProps {
+  value: string | number;
+  label: string;
+  trend?: string;
+  colorType?: string;
+}
+
+export default function KPICard({ value, label, trend, colorType = 'primary' }: KPICardProps) {
   const { theme } = useAppTheme();
   
   const borderColor = theme.colors[colorType] || theme.colors.primary;

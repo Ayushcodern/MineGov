@@ -34,7 +34,7 @@ export const borderRadius = {
   sm: 4, md: 8, lg: 16, round: 9999,
 };
 
-export const getTheme = (isDarkMode) => ({
+export const getTheme = (isDarkMode: boolean) => ({
   colors: isDarkMode ? darkColors : lightColors,
   spacing,
   borderRadius,

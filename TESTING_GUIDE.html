@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MineGOV — Testing & Demo Guide</title>
+  <style>
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --critical: #ef4444;
+      --major: #f97316;
+      --minor: #eab308;
+      --success: #10b981;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      padding: 32px 16px;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 32px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 25px -5px rgba(30, 58, 138, 0.2);
+    }
+    .header h1 {
+      margin: 0 0 8px 0;
+      font-size: 28px;
+    }
+    .header p {
+      margin: 0;
+      opacity: 0.9;
+      font-size: 15px;
+    }
+    .section {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .section h2 {
+      margin-top: 0;
+      font-size: 20px;
+      color: var(--primary);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+    .code-box {
+      background: #0f172a;
+      color: #38bdf8;
+      padding: 16px;
+      border-radius: 10px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 14px;
+      margin: 10px 0;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background-color: #f1f5f9;
+      color: #334155;
+      font-weight: 600;
+    }
+    tr:hover {
+      background-color: #f8fafc;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-critical { background-color: #fee2e2; color: #991b1b; }
+    .badge-major { background-color: #ffedd5; color: #9a3412; }
+    .badge-minor { background-color: #fef9c3; color: #854d0e; }
+    .badge-success { background-color: #d1fae5; color: #065f46; }
+    .badge-primary { background-color: #dbeafe; color: #1e40af; }
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fafafa;
+    }
+    .card h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #1e293b;
+    }
+    .card p {
+      margin: 4px 0;
+      font-size: 13px;
+    }
+    .card .label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📋 MineGOV — Quick Testing & Demo Guide</h1>
+      <p>AI-powered, offline-first compliance, mine safety inspection, and coal transport traceability application for Indian Coal Mines (CMR 2017).</p>
+    </div>
+
+    <div class="section">
+      <h2>🚀 1. How to Run the App</h2>
+      <p>Open your terminal and run one of the following commands:</p>
+      <div class="code-box">cd d:\sihminegov\minegov\MineGOV\cm-gip-mobile<br>npx expo start -c</div>
+      <p>💡 <em>If testing on a physical mobile phone across different Wi-Fi networks:</em></p>
+      <div class="code-box">npx expo start -c --tunnel</div>
+      <p>💻 <em>To run directly in your Web Browser:</em></p>
+      <div class="code-box">npm run web</div>
+    </div>
+
+    <div class="section">
+      <h2>🔑 2. Demo Login Accounts (Password for all: <code>Demo@1234</code>)</h2>
+      <div class="card-grid">
+        <div class="card">
+          <h3>👷 Field Inspector</h3>
+          <p><span class="label">Badge:</span> <code>DEMO_FIELD_01</code></p>
+          <p><span class="label">Email:</span> <code>inspector@minegov.demo</code></p>
+          <p><span class="label">Access:</span> Full Inspection Flow, Camera/Video OCR, Offline Sync</p>
+        </div>
+        <div class="card">
+          <h3>📋 Compliance Officer</h3>
+          <p><span class="label">Badge:</span> <code>DEMO_COMPLIANCE_01</code></p>
+          <p><span class="label">Email:</span> <code>compliance@minegov.demo</code></p>
+          <p><span class="label">Access:</span> PPT Rule Matrix Review, Violation Endorsement</p>
+        </div>
+        <div class="card">
+          <h3>🏗️ Contractor</h3>
+          <p><span class="label">Badge:</span> <code>DEMO_CONTRACTOR_01</code></p>
+          <p><span class="label">Email:</span> <code>contractor@minegov.demo</code></p>
+          <p><span class="label">Access:</span> Action Plan Tasks (Inspection Flow is Restricted)</p>
+        </div>
+        <div class="card">
+          <h3>⛏️ Mining Official</h3>
+          <p><span class="label">Badge:</span> <code>DEMO_OFFICIAL_01</code></p>
+          <p><span class="label">Email:</span> <code>official@minegov.demo</code></p>
+          <p><span class="label">Access:</span> Operations Dashboard, Shift Attendance</p>
+        </div>
+        <div class="card">
+          <h3>📊 Corporate Manager</h3>
+          <p><span class="label">Badge:</span> <code>DEMO_CORP_01</code></p>
+          <p><span class="label">Email:</span> <code>corporate@minegov.demo</code></p>
+          <p><span class="label">Access:</span> ESG Sustainability Score, Risk Heatmap Grid</p>
+        </div>
+        <div class="card">
+          <h3>🏛️ Regulator (DGMS)</h3>
+          <p><span class="label">Badge:</span> <code>DEMO_REGULATOR_01</code></p>
+          <p><span class="label">Email:</span> <code>regulator@minegov.demo</code></p>
+          <p><span class="label">Access:</span> Anomaly Detection Flags & PDF Report Sharing</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>🧪 3. Top Test Scenarios</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Test</th>
+            <th>Feature</th>
+            <th>Sample Input / Steps</th>
+            <th>Expected Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1</strong></td>
+            <td><strong>Gemini OCR (English & Hindi)</strong></td>
+            <td>Take a photo of a handwritten note:<br><em>"शाफ्ट 3 में वेंटिलेशन डक्ट फटा है, हवा का फ्लो रुका है।"</em></td>
+            <td><span class="badge badge-primary">Extracted</span> Inserts transcribed Hindi/English text into the observation editor.</td>
+          </tr>
+          <tr>
+            <td><strong>2</strong></td>
+            <td><strong>Live Severity Classifier</strong></td>
+            <td>Type: <em>"Methane level 1.9% near return airway"</em></td>
+            <td><span class="badge badge-critical">CRITICAL</span> Cites CMR 2017 Reg 141 with reasoning.</td>
+          </tr>
+          <tr>
+            <td><strong>3</strong></td>
+            <td><strong>30s Video Evidence</strong></td>
+            <td>Record a 5-second video in Inspection tab</td>
+            <td><span class="badge badge-success">Tamper-Proof</span> Stamped with cryptographic <code>SHA-256: &lt;hash&gt;</code>.</td>
+          </tr>
+          <tr>
+            <td><strong>4</strong></td>
+            <td><strong>Offline Underground Sync</strong></td>
+            <td>1. Turn on Airplane Mode<br>2. Submit inspection<br>3. Turn Airplane Mode off</td>
+            <td><span class="badge badge-success">Auto-Synced</span> Report queues locally and auto-syncs to Supabase on reconnect.</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td><strong>Coal QR Checkpoint Shortage</strong></td>
+            <td>Register 25.5 Tonnes, then at Checkpoint enter 20.0 Tonnes</td>
+            <td><span class="badge badge-major">Flagged</span> Triggers <strong>"⚠️ Weight Deviation / Coal Theft Alert"</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>6</strong></td>
+            <td><strong>Contract Expiry Alerts</strong></td>
+            <td>Open <strong>Alerts</strong> tab</td>
+            <td><span class="badge badge-minor">Proactive</span> Displays 12-day contract expiry notice for Heavy Earthmovers.</td>
+          </tr>
+          <tr>
+            <td><strong>7</strong></td>
+            <td><strong>Bilingual Localization</strong></td>
+            <td>Go to Profile ➔ Language Switcher</td>
+            <td><span class="badge badge-primary">i18n</span> Instantly translates entire UI to <strong>हिंदी (Hindi)</strong>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

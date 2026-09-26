@@ -4,50 +4,58 @@ import PropTypes from 'prop-types';
 import { Ionicons } from '@expo/vector-icons';
 import { useAppTheme } from '../context/ThemeContext';
 
-export default function AlertCard({ alert, onPress }) {
-  const { theme } = useAppTheme();
+export default function AlertCard({ alert, onPress }: any) {
+  const { theme } = useAppTheme() as any;
   
-  const getIconForType = (type) => {
+  const getIconForType = (type: string) => {
     switch(type) {
-      case 'danger': return 'warning';
+      case 'escalation': return 'alert-circle';
+      case 'contract_expiry': return 'calendar';
+      case 'gas_leak': return 'flame';
+      case 'short_shift_violation': return 'time';
+      case 'danger':
+      case 'critical': return 'warning';
       case 'success': return 'checkmark-circle';
       case 'warning': return 'alert-circle';
-      case 'info':
-      default: return 'information-circle';
+      default: return 'notifications';
     }
   };
 
-  const getColorForType = (type) => {
-    switch(type) {
-      case 'danger': return theme.colors.danger;
-      case 'success': return theme.colors.success;
-      case 'warning': return theme.colors.warning;
-      case 'info':
-      default: return theme.colors.primary;
-    }
+  const getColorForType = (type: string, priority?: string) => {
+    if (type === 'escalation' || priority === 'critical') return theme.colors.danger;
+    if (type === 'contract_expiry' || type === 'short_shift_violation') return theme.colors.warning;
+    if (type === 'success') return theme.colors.success;
+    return theme.colors.primary;
   };
 
-  const typeColor = getColorForType(alert.type);
-  const timeString = alert.createdAt && typeof alert.createdAt.toDate === 'function'
-      ? alert.createdAt.toDate().toLocaleDateString()
-      : 'Recently';
+  const typeColor = getColorForType(alert.type, alert.priority);
+  const timeString = alert.created_at || alert.createdAt
+    ? new Date(alert.created_at || alert.createdAt).toLocaleDateString()
+    : 'Today';
+
+  const titleText = alert.title || (
+    alert.type === 'escalation' ? '🚨 Overdue Action Escalation' :
+    alert.type === 'contract_expiry' ? '⚠️ Contractor Contract Expiry' :
+    alert.type === 'short_shift_violation' ? '⏱️ Labour Shift Violation' :
+    'Safety Notification'
+  );
 
   return (
     <TouchableOpacity 
       style={[
         styles.alertCard, 
         { backgroundColor: theme.colors.card, shadowColor: theme.colors.border },
-        !alert.read && { borderLeftWidth: 3, borderLeftColor: theme.colors.primary, backgroundColor: theme.colors.accent }
+        !alert.read && { borderLeftWidth: 3.5, borderLeftColor: typeColor, backgroundColor: theme.colors.accent }
       ]}
       onPress={() => onPress(alert)}
     >
       <View style={styles.iconContainer}>
-        <Ionicons name={getIconForType(alert.type)} size={28} color={typeColor} />
+        <Ionicons name={getIconForType(alert.type) as any} size={26} color={typeColor} />
       </View>
       <View style={styles.contentContainer}>
         <View style={styles.headerRow}>
           <Text style={[styles.alertTitle, { color: theme.colors.text }, !alert.read && styles.unreadText]}>
-            {alert.title}
+            {titleText}
           </Text>
           <Text style={[styles.timeText, { color: theme.colors.textLight }]}>
             {timeString}
@@ -55,7 +63,7 @@ export default function AlertCard({ alert, onPress }) {
         </View>
         <Text style={[styles.alertMessage, { color: theme.colors.textLight }]}>{alert.message}</Text>
       </View>
-      {!alert.read && <View style={[styles.unreadDot, { backgroundColor: theme.colors.primary }]} />}
+      {!alert.read && <View style={[styles.unreadDot, { backgroundColor: typeColor }]} />}
     </TouchableOpacity>
   );
 }
@@ -68,17 +76,17 @@ AlertCard.propTypes = {
 const styles = StyleSheet.create({
   alertCard: {
     flexDirection: 'row',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 12,
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.08,
     shadowRadius: 3,
     elevation: 2,
     alignItems: 'center',
   },
   iconContainer: {
-    marginRight: 16,
+    marginRight: 12,
   },
   contentContainer: {
     flex: 1,
@@ -90,15 +98,15 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   alertTitle: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     flex: 1,
   },
   unreadText: {
     fontWeight: 'bold',
   },
   timeText: {
-    fontSize: 12,
+    fontSize: 11,
     marginLeft: 8,
   },
   alertMessage: {

@@ -32,23 +32,37 @@ export interface RiskPrediction {
   predictedIncidents: PredictedIncident[];
 }
 
-// TO-DO: Replace with actual Gemini API Key from Google AI Studio.
-// If this is blank or default, the service will fall back to smart Mock Mode
-// so the UI can still be tested perfectly.
-const API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || 'YOUR_GEMINI_API_KEY'; 
+// Helper to safely parse JSON returned by LLM (even if wrapped in markdown fences or arrays)
+const parseJsonFromResponse = <T>(text: string, fallback: T): T => {
+  try {
+    const cleaned = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const jsonMatch = cleaned.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (jsonMatch) {
+      return JSON.parse(jsonMatch[0]) as T;
+    }
+  } catch (err) {
+    console.warn('JSON parse error from AI response:', err);
+  }
+  return fallback;
+};
+
+// Clean and sanitize Gemini API Key from environment or .env
+const RAW_KEY = (process.env.EXPO_PUBLIC_GEMINI_API_KEY || '').trim().replace(/^["']|["']$/g, '');
+const API_KEY = RAW_KEY && RAW_KEY !== 'YOUR_GEMINI_API_KEY' ? RAW_KEY : null;
 
 let genAI: GoogleGenerativeAI | null = null;
-if (API_KEY && API_KEY !== 'YOUR_GEMINI_API_KEY') {
+if (API_KEY) {
   genAI = new GoogleGenerativeAI(API_KEY);
 }
 
-// 0. Extract text from images using Gemini 1.5 Flash (Vision)
+// 0. Extract text from images using Gemini (Vision OCR with Multilingual Hindi & English support)
 export const extractTextFromImage = async (base64Image: string, mimeType: string = 'image/jpeg'): Promise<string> => {
+  if (!base64Image || !base64Image.trim()) return '';
+
   if (genAI) {
     try {
-      // Must use gemini-1.5-flash for multimodal/vision tasks
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-      const prompt = "Please read and extract all handwritten text, safety observations, and violations from this mining log image. Return ONLY the extracted text.";
+      const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
+      const prompt = "Please read and extract all handwritten or printed text, safety observations, and violations from this mining log image. It may be written in English, Hindi (हिंदी / Devanagari), or Hinglish. Accurately transcribe all text and provide the safety context. Return ONLY the extracted text.";
       
       const result = await model.generateContent([
         prompt,
@@ -60,9 +74,9 @@ export const extractTextFromImage = async (base64Image: string, mimeType: string
         }
       ]);
       const response = await result.response;
-      return response.text();
-    } catch (error) {
-      console.warn('AI Vision Parsing failed, falling back to mock.', error);
+      return response.text().trim();
+    } catch (error: any) {
+      console.warn('AI Vision Parsing failed, falling back to mock.', error?.message || error);
     }
   }
 
@@ -73,36 +87,41 @@ export const extractTextFromImage = async (base64Image: string, mimeType: string
 
 export const aiService = {
   extractTextFromImage,
-  // 1. Analyze observation text in real-time
+  // 1. Analyze observation text in real-time (Supports English, Hindi, and Hinglish)
   classifyObservationSeverity: async (description: string): Promise<ObservationClassification> => {
+    if (!description || !description.trim()) {
+      return { severity: 'suggestion', confidence: 100, regulation: 'General Safety', reasoning: 'No observation text provided.' };
+    }
+
     // Check if real AI is available
     if (genAI) {
       try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
         const prompt = `
-You are a coal mining safety compliance expert. Classify the severity of this safety observation.
+You are a coal mining safety compliance expert under Coal Mines Regulations (CMR) 2017. 
+Classify the severity of this safety observation (which may be written in English, Hindi, or Hinglish).
 OBSERVATION: "${description}"
 
 CLASSIFICATION CRITERIA:
-- CRITICAL: Immediate threat to life, requires work stoppage
-- MAJOR: Serious violation, requires action within 24-48 hours
-- MINOR: Compliance gap, action within 7 days
-- SUGGESTION: Improvement opportunity, no immediate risk
+- CRITICAL: Immediate threat to life, gas accumulation, roof collapse danger, requires work stoppage
+- MAJOR: Serious violation, ventilation damage, electrical hazard, requires action within 24-48 hours
+- MINOR: Compliance gap, missing signs, PPE issues, action within 7 days
+- SUGGESTION: Housekeeping or minor improvement opportunity
 
-Respond strictly in JSON format (do not use markdown formatting tags):
+Respond strictly in JSON format:
 {
   "severity": "critical|major|minor|suggestion",
   "confidence": 95,
   "regulation": "Regulation 119, CMR 2017",
-  "reasoning": "explanation"
+  "reasoning": "English explanation of why this was flagged"
 }`;
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return JSON.parse(jsonMatch[0]);
-      } catch (error) {
-        console.warn('AI Parsing failed, falling back to mock.', error);
+        const parsed = parseJsonFromResponse<ObservationClassification | null>(text, null);
+        if (parsed && parsed.severity) return parsed;
+      } catch (error: any) {
+        console.warn('AI Parsing failed, falling back to mock.', error?.message || error);
       }
     }
 
@@ -126,13 +145,13 @@ Respond strictly in JSON format (do not use markdown formatting tags):
   analyzeInspectionRisk: async (inspectionData: InspectionDataPayload): Promise<RiskAnalysis> => {
     if (genAI) {
       try {
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
         const prompt = `
-You are a coal mining safety expert AI. Analyze this inspection data.
-Checklist Failures: ${inspectionData.checklistFailures.join(', ')}
-Observations: ${inspectionData.observations.map(o => o.text).join('; ')}
+You are a coal mining safety expert AI under CMR 2017. Analyze this inspection data.
+Checklist Failures: ${inspectionData.checklistFailures.join(', ') || 'None'}
+Observations: ${inspectionData.observations.map(o => o.text).join('; ') || 'None'}
 
-Calculate the overall risk score (0-100) and provide insights.
+Calculate the overall risk score (0-100) and provide actionable insights.
 Respond strictly in JSON format:
 {
   "riskScore": 75,
@@ -143,10 +162,10 @@ Respond strictly in JSON format:
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return JSON.parse(jsonMatch[0]);
-      } catch (error) {
-        console.warn('AI Parsing failed, falling back to mock.', error);
+        const parsed = parseJsonFromResponse<RiskAnalysis | null>(text, null);
+        if (parsed && typeof parsed.riskScore === 'number') return parsed;
+      } catch (error: any) {
+        console.warn('AI Parsing failed, falling back to mock.', error?.message || error);
       }
     }
 
@@ -178,7 +197,36 @@ Respond strictly in JSON format:
   // 3. Predict risks for Dashboard
   predictRisks: async (): Promise<RiskPrediction> => {
     if (genAI) {
-      // (Implementation same as above but omitted for brevity to use mock directly)
+      try {
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.5-flash-lite' });
+        const prompt = `You are a coal mining safety predictive intelligence system for Indian coal mines (CMR 2017).
+Predict 2 high-priority safety incidents/hazards based on seasonal and mining conditions.
+Respond strictly in JSON format:
+{
+  "predictedIncidents": [
+    {
+      "type": "Roof Fall",
+      "probability": 78,
+      "timeframe": "Next 15 days",
+      "location": "Panel A-12, Gevra Mine",
+      "actions": ["Install roof bolts", "Perform ultrasonic soundings"]
+    },
+    {
+      "type": "Methane Accumulation",
+      "probability": 65,
+      "timeframe": "Next 7 days",
+      "location": "Panel B-07, Kusmunda Mine",
+      "actions": ["Increase intake airflow", "Calibrate methanometers"]
+    }
+  ]
+}`;
+        const result = await model.generateContent(prompt);
+        const text = (await result.response).text();
+        const parsed = parseJsonFromResponse<RiskPrediction | null>(text, null);
+        if (parsed && Array.isArray(parsed.predictedIncidents)) return parsed;
+      } catch (error: any) {
+        console.warn('AI Risk Prediction failed, falling back to mock.', error?.message || error);
+      }
     }
 
     // MOCK FALLBACK MODE
