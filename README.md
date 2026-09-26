@@ -1,6 +1,6 @@
 <div align="center">
   <img src="docs/MineGOV_Logo.webp" alt="MineGOV Logo" width="180" style="border-radius: 24px; margin-bottom: 12px;" />
-  <h1>🇮🇳 MineGOV — CoalMine Governance & Intelligence Platform</h1>
+  <h1></h1> MineGOV — CoalMine Governance & Intelligence Platform</h1>
 
 [![React Native](https://img.shields.io/badge/React_Native-0.74+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-SDK_54-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
