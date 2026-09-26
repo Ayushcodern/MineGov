@@ -1,4 +1,6 @@
-#  MineGOV — CoalMine Governance & Intelligence Platform
+<div align="center">
+  <img src="docs/MineGOV_Logo.webp" alt="MineGOV Logo" width="180" style="border-radius: 24px; margin-bottom: 12px;" />
+  <h1>🇮🇳 MineGOV — CoalMine Governance & Intelligence Platform</h1>
 
 [![React Native](https://img.shields.io/badge/React_Native-0.74+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-SDK_54-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
@@ -7,6 +9,8 @@
 [![Google Gemini](https://img.shields.io/badge/Gemini_AI-3.5_Flash_Vision-8E75C2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
 [![DGMS Compliant](https://img.shields.io/badge/DGMS-CMR_2017_Compliant-FF6B6B?style=for-the-badge)](https://dgms.gov.in/)
 [![Download APK](https://img.shields.io/badge/Download-MineGov.apk_v1.0.0-22c55e?style=for-the-badge&logo=android&logoColor=white)](https://github.com/Ayushcodern/MIneGov/raw/main/releases/MineGov.apk)
+
+</div>
 
 > **Next-Generation Governance, Real-Time Compliance Audit, AI Hazard Forecasting & Offline-First Field Safety System for the Indian Coal Mining Sector.**
 
