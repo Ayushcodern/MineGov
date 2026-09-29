@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="minegov/MineGOV/docs/MineGOV_Logo.webp" alt="MineGOV Logo" width="180" style="border-radius: 24px; margin-bottom: 12px;" />
-  <h1>🇮🇳 MineGOV</h1>
+  <img src="docs/MineGOV_Logo.webp" alt="MineGOV Logo" width="180" style="border-radius: 24px; margin-bottom: 12px;" />
+  <h1>MineGOV</h1>
   <h3>AI-Based Smart Governance and Compliance Monitoring System for Coal Mines</h3>
   <p><b>Smart India Hackathon (SIH) | Problem Statement ID: SIH26024</b></p>
 
@@ -50,12 +50,12 @@ Built in strict alignment with statutory mandates of the **Directorate General o
 
 | 1. Field Officer Dashboard & ESG Scorecard | 2. Step 1: GPS Geofence Verification | 3. Step 2: CMR 2017 Safety Checklist |
 | :---: | :---: | :---: |
-| <img src="minegov/MineGOV/docs/screenshots/01_dashboard_esg_overview.png" width="280" alt="Dashboard & ESG Scorecard" /> | <img src="minegov/MineGOV/docs/screenshots/02_inspection_geofence_lock.png" width="280" alt="GPS Geofence Verification" /> | <img src="minegov/MineGOV/docs/screenshots/03_safety_checklist_cmr.png" width="280" alt="Safety Checklist" /> |
+| <img src="docs/screenshots/01_dashboard_esg_overview.png" width="280" alt="Dashboard & ESG Scorecard" /> | <img src="docs/screenshots/02_inspection_geofence_lock.png" width="280" alt="GPS Geofence Verification" /> | <img src="docs/screenshots/03_safety_checklist_cmr.png" width="280" alt="Safety Checklist" /> |
 | *Active inspection duty, real-time ESG metrics (87.6/100), and Mine Risk Heat Grid* | *Mine location selection & real-time GPS boundary verification lock* | *20-point standard CMR 2017 safety checklist with instant Pass/Fail audit counters* |
 
 | 4. Step 3: Multimedia Evidence & Bilingual OCR | 5. Officer Profile & Offline Sync Queue |
 | :---: | :---: |
-| <img src="minegov/MineGOV/docs/screenshots/04_multimedia_evidence_ocr.png" width="280" alt="Multimedia Evidence & Gemini OCR" /> | <img src="minegov/MineGOV/docs/screenshots/05_profile_sync_settings.png" width="280" alt="Officer Profile & Offline Sync" /> |
+| <img src="docs/screenshots/04_multimedia_evidence_ocr.png" width="280" alt="Multimedia Evidence & Gemini OCR" /> | <img src="docs/screenshots/05_profile_sync_settings.png" width="280" alt="Officer Profile & Offline Sync" /> |
 | *Geotagged coordinate stamp & Google Gemini AI bilingual handwritten log OCR* | *Officer authentication identity, offline task sync queue dispatcher, theme & language controls* |
 
 ---
