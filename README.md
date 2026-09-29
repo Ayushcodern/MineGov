@@ -1,6 +1,13 @@
 <div align="center">
-  <img src="docs/MineGOV_Logo.webp" alt="MineGOV Logo" width="180" style="border-radius: 24px; margin-bottom: 12px;" />
-  <h1></h1> MineGOV — CoalMine Governance & Intelligence Platform</h1>
+  <img src="minegov/MineGOV/docs/MineGOV_Logo.webp" alt="MineGOV Logo" width="180" style="border-radius: 24px; margin-bottom: 12px;" />
+  <h1>🇮🇳 MineGOV</h1>
+  <h3>AI-Based Smart Governance and Compliance Monitoring System for Coal Mines</h3>
+  <p><b>Smart India Hackathon (SIH) | Problem Statement ID: SIH26024</b></p>
+
+[![SIH 2024](https://img.shields.io/badge/SIH-PS_ID:_SIH26024-FF9933?style=for-the-badge&logo=gov.in&logoColor=white)](https://sih.gov.in/)
+[![Ministry of Coal](https://img.shields.io/badge/Organisation-Ministry_of_Coal-138808?style=for-the-badge)](https://coal.gov.in/)
+[![Coal India Limited](https://img.shields.io/badge/Department-Coal_India_Limited-000080?style=for-the-badge)](https://www.coalindia.in/)
+[![Theme](https://img.shields.io/badge/Theme-Smart_Automation-6366F1?style=for-the-badge)](https://sih.gov.in/)
 
 [![React Native](https://img.shields.io/badge/React_Native-0.74+-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-SDK_54-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
@@ -12,15 +19,30 @@
 
 </div>
 
+---
+
+### 📋 Problem Statement Reference
+
+| Attribute | Details |
+| :--- | :--- |
+| **Problem Statement Title** | **AI-Based Smart Governance and Compliance Monitoring System for Coal Mines** |
+| **Problem Statement ID (PS ID)** | **SIH26024** |
+| **Organisation** | **Ministry of Coal** |
+| **Department** | **Coal India Limited (CIL)** |
+| **Category / Theme** | **Smart Automation** |
+| **Target Sector** | Indian Coal Mining Industry (Underground & Opencast Collieries) |
+
+---
+
 > **Next-Generation Governance, Real-Time Compliance Audit, AI Hazard Forecasting & Offline-First Field Safety System for the Indian Coal Mining Sector.**
 
 ---
 
 ## 📌 Executive Summary
 
-**MineGOV** is an enterprise-grade, mobile-first intelligence platform built to eliminate administrative silos and prevent underground and opencast coal mining hazards across Indian collieries. 
+**MineGOV** is an enterprise-grade, mobile-first intelligence platform purpose-built for SIH Problem Statement **SIH26024** (*"AI-Based Smart Governance and Compliance Monitoring System for Coal Mines"* under the **Ministry of Coal** & **Coal India Limited**). It eliminates administrative silos and prevents underground and opencast coal mining hazards across Indian collieries. 
 
-Built in alignment with statutory mandates of the **Directorate General of Mines Safety (DGMS)**, the **Coal Mines Regulations (CMR) 2017**, and the **Mines Act 1952**, MineGOV delivers real-time compliance enforcement, tamper-proof forensic evidence logging (SHA-256), AI-powered vision OCR in Hindi & English, geofenced inspection locking, dynamic coal consignment tracking via QR codes, and automated escalation governance.
+Built in strict alignment with statutory mandates of the **Directorate General of Mines Safety (DGMS)**, the **Coal Mines Regulations (CMR) 2017**, and the **Mines Act 1952**, MineGOV delivers real-time compliance enforcement, tamper-proof forensic evidence logging (SHA-256), AI-powered vision OCR in Hindi & English, geofenced inspection locking, dynamic coal consignment tracking via QR codes, and automated escalation governance.
 
 ---
 
@@ -28,19 +50,17 @@ Built in alignment with statutory mandates of the **Directorate General of Mines
 
 | 1. Field Officer Dashboard & ESG Scorecard | 2. Step 1: GPS Geofence Verification | 3. Step 2: CMR 2017 Safety Checklist |
 | :---: | :---: | :---: |
-| <img src="docs/screenshots/01_dashboard_esg_overview.png" width="280" alt="Dashboard & ESG Scorecard" /> | <img src="docs/screenshots/02_inspection_geofence_lock.png" width="280" alt="GPS Geofence Verification" /> | <img src="docs/screenshots/03_safety_checklist_cmr.png" width="280" alt="Safety Checklist" /> |
+| <img src="minegov/MineGOV/docs/screenshots/01_dashboard_esg_overview.png" width="280" alt="Dashboard & ESG Scorecard" /> | <img src="minegov/MineGOV/docs/screenshots/02_inspection_geofence_lock.png" width="280" alt="GPS Geofence Verification" /> | <img src="minegov/MineGOV/docs/screenshots/03_safety_checklist_cmr.png" width="280" alt="Safety Checklist" /> |
 | *Active inspection duty, real-time ESG metrics (87.6/100), and Mine Risk Heat Grid* | *Mine location selection & real-time GPS boundary verification lock* | *20-point standard CMR 2017 safety checklist with instant Pass/Fail audit counters* |
 
 | 4. Step 3: Multimedia Evidence & Bilingual OCR | 5. Officer Profile & Offline Sync Queue |
 | :---: | :---: |
-| <img src="docs/screenshots/04_multimedia_evidence_ocr.png" width="280" alt="Multimedia Evidence & Gemini OCR" /> | <img src="docs/screenshots/05_profile_sync_settings.png" width="280" alt="Officer Profile & Offline Sync" /> |
+| <img src="minegov/MineGOV/docs/screenshots/04_multimedia_evidence_ocr.png" width="280" alt="Multimedia Evidence & Gemini OCR" /> | <img src="minegov/MineGOV/docs/screenshots/05_profile_sync_settings.png" width="280" alt="Officer Profile & Offline Sync" /> |
 | *Geotagged coordinate stamp & Google Gemini AI bilingual handwritten log OCR* | *Officer authentication identity, offline task sync queue dispatcher, theme & language controls* |
 
 ---
 
 ## 🎥 Video Walkthrough & Live Demo
-
-<!-- Embed your demonstration video here or link to YouTube / Loom -->
 
 [![MineGOV Demo Video](https://placehold.co/1280x720/1A202C/ffffff?text=▶+Click+to+Watch+MineGOV+Complete+System+Demo)](https://youtube.com)
 
@@ -398,7 +418,7 @@ MineGOV automatically adapts UI workflows, privileges, and action cards based on
 ```
 +---------------------------------------------------------------------------------------------------------+
 |                                    MINEGOV GOVERNANCE HIERARCHY                                         |
-+---------------------+-------------------------------+---------------------------------------------------+
+++--------------------+-------------------------------+---------------------------------------------------+
 | Role Designation    | Default Officer               | Core Responsibilities & Modules                   |
 +---------------------+-------------------------------+---------------------------------------------------+
 | 👮 Field Inspector   | Rajesh Sharma (INSP-IND-101)  | Live GPS Inspections, 20-item checklist, OCR, video |
@@ -453,7 +473,7 @@ MineGOV automatically adapts UI workflows, privileges, and action cards based on
 ### Step 1: Clone Repository
 ```bash
 git clone https://github.com/Ayushcodern/MIneGov.git
-cd MIneGov/cm-gip-mobile
+cd MIneGov/minegov/MineGOV/cm-gip-mobile
 ```
 
 ### Step 2: Install Dependencies
@@ -462,7 +482,7 @@ npm install
 ```
 
 ### Step 3: Configure Environment Variables
-Create a `.env` file inside `cm-gip-mobile/`:
+Create a `.env` file inside `minegov/MineGOV/cm-gip-mobile/`:
 ```env
 EXPO_PUBLIC_SUPABASE_URL=https://<your-supabase-project>.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
@@ -472,7 +492,7 @@ EXPO_PUBLIC_GEMINI_API_KEY=<your-google-gemini-api-key>
 ### Step 4: Run the Application
 ```bash
 # Clear Metro cache and launch Expo Dev Server
-npx expo start -c
+npm run start
 ```
 - Scan the printed QR code using the **Expo Go** mobile app.
 - For Web Browser testing: press `w` or run `npm run web`.
@@ -523,5 +543,6 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 ## 🤝 Acknowledgments
 - **Ministry of Coal, Government of India**
+- **Coal India Limited (CIL)**
 - **Directorate General of Mines Safety (DGMS)**
 - **Smart India Hackathon (SIH)**
