@@ -60,9 +60,6 @@ Built in strict alignment with statutory mandates of the **Directorate General o
 
 ---
 
-## 🎥 Video Walkthrough & Live Demo
-
-[![MineGOV Demo Video](https://placehold.co/1280x720/1A202C/ffffff?text=▶+Click+to+Watch+MineGOV+Complete+System+Demo)](https://youtube.com)
 
 > 📹 **Walkthrough Highlights:**
 > - Zero-network underground inspection logging & background auto-sync.
